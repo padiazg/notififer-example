@@ -1,0 +1,6 @@
+*.crt
+*.key
+*.out
+cover.svg
+.vscode
+.golangci.reference.yaml

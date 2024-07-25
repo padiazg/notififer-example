@@ -1,0 +1,13 @@
+webhook:
+  enabled: true
+  port: 3001
+  use-tls: false
+  certificates:
+      - name: certificate-1
+        certfile: cert-file.crt
+        keyfile: key-file.crt
+
+amqp:
+  enabled: false
+  address: amqp://localhost
+  queue: notification
