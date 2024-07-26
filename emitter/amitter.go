@@ -10,11 +10,10 @@ import (
 	"time"
 
 	"github.com/padiazg/notifier-example/config/settings"
-	"github.com/padiazg/notifier/engine"
-	"github.com/padiazg/notifier/model"
-
 	amqp "github.com/padiazg/notifier/connector/amqp10"
 	"github.com/padiazg/notifier/connector/webhook"
+	"github.com/padiazg/notifier/engine"
+	"github.com/padiazg/notifier/model"
 )
 
 const (
@@ -30,7 +29,8 @@ func Run(settings *settings.Settings) {
 			},
 		})
 
-		webhookId, amqpId string
+		webhookId string
+		amqpId    string
 
 		wg   sync.WaitGroup
 		done = make(chan bool)
@@ -48,37 +48,48 @@ func Run(settings *settings.Settings) {
 					Name string
 				}{ID: 1, Name: "complex data"},
 			},
-			{
-				Event:    SomeEvent,
-				Data:     "only to webhook",
-				Channels: []string{webhookId},
-			},
-			{
-				Event:    SomeEvent,
-				Data:     "only to mq",
-				Channels: []string{amqpId},
-			},
 		}
 	)
 
 	if settings.Webhook.Enabled {
-		webhookId = engine.Register(webhook.New(&webhook.Config{
-			Name:     "Webhook",
-			Endpoint: "https://localhost:4443/webhook",
-			Insecure: true,
-			Headers: map[string]string{
-				"Authorization": "Bearer xyz123",
-				"X-Portal-Id":   "1234567890",
-			},
-		}))
+		var (
+			webhookConfig = &webhook.Config{
+				Name: "Webhook",
+				Headers: map[string]string{
+					"Authorization": "Bearer xyz123",
+					"X-Portal-Id":   "1234567890",
+				},
+			}
+			proto string = "http"
+		)
+
+		if settings.Webhook.UseTLS {
+			proto = "https"
+			webhookConfig.Insecure = true
+		}
+
+		webhookConfig.Endpoint = fmt.Sprintf("%s://localhost:%d/webhook", proto, settings.Webhook.Port)
+		webhookId = engine.Register(webhook.New(webhookConfig))
+
+		messages = append(messages, &model.Notification{
+			Event:    SomeEvent,
+			Data:     "only to webhook",
+			Channels: []string{webhookId},
+		})
 	}
 
 	if settings.AMQP.Enabled {
 		amqpId = engine.Register(amqp.New(&amqp.Config{
 			Name:      "AMQP",
-			QueueName: "notifier",
-			Address:   "amqp://localhost",
+			QueueName: settings.AMQP.Queue,
+			Address:   settings.AMQP.Address,
 		}))
+
+		messages = append(messages, &model.Notification{
+			Event:    SomeEvent,
+			Data:     "only to mq",
+			Channels: []string{amqpId},
+		})
 	}
 
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

@@ -24,17 +24,20 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 
 	formated, err := json.MarshalIndent(notification, "", "  ")
 	if err != nil {
-		log.Printf("Failed to format payload: %v", err)
+		log.Printf("webhook: Failed to format payload: %v", err)
 		return
 	}
 
+	log.Println("===== webhook =====")
 	// Process the received notification
-	log.Printf("%v Received notification: %+v\n", r.Method, string(formated))
+	log.Printf("payload: %+v\n", string(formated))
 
 	// Print the request headers
-	var headers []byte
-	headers, _ = json.MarshalIndent(r.Header, "", "  ")
-	log.Printf("%v Headers: %s\n", r.Method, string(headers))
+	if len(r.Header) > 0 {
+		var headers []byte
+		headers, _ = json.MarshalIndent(r.Header, "", "  ")
+		log.Printf("eaders: %s\n", string(headers))
+	}
 
 	// Respond with a success message
 	w.WriteHeader(http.StatusOK)

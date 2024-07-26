@@ -4,8 +4,8 @@ webhook:
   use-tls: false
   certificates:
       - name: certificate-1
-        certfile: cert-file.crt
-        keyfile: key-file.crt
+        certfile: dependencies/cert/localhost.crt
+        keyfile: dependencies/cert/localhost.key
 
 amqp:
   enabled: false
