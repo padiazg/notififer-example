@@ -25,18 +25,9 @@ var (
 	// listenCmd represents the listen command
 	listenCmd = &cobra.Command{
 		Use:   "listen",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "Starts the listeners",
+		Long:  `Starts all the listeners set and configured in the configuration file. At least one listener must be set.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			// if err := s.Read(cfgFile); err != nil {
-			// 	panic(err)
-			// }
-
 			s.ParseServeArgsAndFlags(cmd, args)
 			s.Show()
 			listener.Run(s)

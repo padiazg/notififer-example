@@ -24,13 +24,8 @@ import (
 // emmitCmd represents the emmit command
 var emmitCmd = &cobra.Command{
 	Use:   "emmit",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Sends a few messages",
+	Long:  `Notifies a few payloads to the different channels set in the configuration file, then exits immediately`,
 	Run: func(cmd *cobra.Command, args []string) {
 		s.ParseServeArgsAndFlags(cmd, args)
 		s.Show()

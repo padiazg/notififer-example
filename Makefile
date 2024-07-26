@@ -10,7 +10,7 @@ run: run-listener
 
 run-listener:
 	@echo "Running listener..."
-	@./bin/notifier-example listen --show-config
+	@./bin/notifier-example listen
 
 run-emitter:
 	@echo "Running emitter..."

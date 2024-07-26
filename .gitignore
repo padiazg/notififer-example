@@ -4,4 +4,5 @@
 cover.svg
 .vscode
 .golangci.reference.yaml
+.notifier-example.yaml
 bin

@@ -95,8 +95,9 @@ func (s *Settings) Save(name string) error {
 func (s *Settings) SaveExample(name string) error {
 	data, err := yaml.Marshal(&Settings{
 		Webhook: WebhookSettings{
-			Port:   7443,
-			UseTLS: true,
+			Enabled: true,
+			Port:    7443,
+			UseTLS:  true,
 			Certificates: Certificates{{
 				Name:     "certificate-1",
 				CertFile: "cert-file.crt",
@@ -104,6 +105,7 @@ func (s *Settings) SaveExample(name string) error {
 			}},
 		},
 		AMQP: AMQPSettings{
+			Enabled: true,
 			Address: "amqp://localhost",
 			Queue:   "notification",
 		},
