@@ -1,6 +1,5 @@
 # notififer-example
-
-An application to demonstrate the functionality and use of the (notifier)[https://github.com/padiazg/notifier] library
+An example to demonstrate how to use the [notifier](https://github.com/padiazg/notifier) library
 
 ## Build
 ```bash
