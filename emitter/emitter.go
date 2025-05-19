@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/padiazg/notifier-example/config/settings"
+	"github.com/padiazg/notifier/broker"
 	amqp "github.com/padiazg/notifier/connector/amqp10"
 	"github.com/padiazg/notifier/connector/webhook"
-	"github.com/padiazg/notifier/engine"
 	"github.com/padiazg/notifier/model"
 )
 
@@ -23,7 +23,7 @@ const (
 
 func Run(settings *settings.Settings) {
 	var (
-		engine = engine.New(&engine.Config{
+		broker = broker.New(&broker.Config{
 			OnError: func(err error) {
 				log.Printf("Error: %s", err.Error())
 			},
@@ -69,7 +69,7 @@ func Run(settings *settings.Settings) {
 		}
 
 		webhookConfig.Endpoint = fmt.Sprintf("%s://localhost:%d/webhook", proto, settings.Webhook.Port)
-		webhookId = engine.Register(webhook.New(webhookConfig))
+		webhookId = broker.NotifierRegister(webhook.New(webhookConfig))
 
 		messages = append(messages, &model.Notification{
 			Event:    SomeEvent,
@@ -79,7 +79,7 @@ func Run(settings *settings.Settings) {
 	}
 
 	if settings.AMQP.Enabled {
-		amqpId = engine.Register(amqp.New(&amqp.Config{
+		amqpId = broker.NotifierRegister(amqp.New(&amqp.Config{
 			Name:      "AMQP",
 			QueueName: settings.AMQP.Queue,
 			Address:   settings.AMQP.Address,
@@ -94,14 +94,14 @@ func Run(settings *settings.Settings) {
 
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	fmt.Println("Starting engine...")
-	engine.Start()
+	fmt.Println("Starting broker...")
+	broker.Start()
 
 	for _, m := range messages {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			engine.Dispatch(m)
+			broker.Dispatch(m)
 		}()
 	}
 
@@ -115,7 +115,7 @@ func Run(settings *settings.Settings) {
 		case <-done:
 			fmt.Println("Exiting...")
 			// stop the engine
-			engine.Stop()
+			broker.Stop()
 			// give some time to the engine to stop
 			time.Sleep(100 * time.Millisecond)
 			return

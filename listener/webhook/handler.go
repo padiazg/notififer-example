@@ -36,7 +36,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	if len(r.Header) > 0 {
 		var headers []byte
 		headers, _ = json.MarshalIndent(r.Header, "", "  ")
-		log.Printf("eaders: %s\n", string(headers))
+		log.Printf("headers: %s\n", string(headers))
 	}
 
 	// Respond with a success message
